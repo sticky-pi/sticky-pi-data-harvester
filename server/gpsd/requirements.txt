@@ -1,3 +1,5 @@
 Flask
-retry
 uWSGI
+iso8601
+redis
+gps3
