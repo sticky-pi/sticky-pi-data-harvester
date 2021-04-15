@@ -29,15 +29,16 @@ url_harvester_status = f"http://{HARVESTER_ROOT}/status/"
 
 
 #fixme, here try to ping, first, then check response is OK!
-response = requests.get(url_update_status)
-assert response.status_code == 200, response
-harvester_status = json.loads(response.content)
-
-# update the pi metadata
-new_metadata = {}
-new_metadata.upate(harvester_status['gps_coordinates'])
-new_metadata.upate({'time': harvester_status['time']})
-
+# response = requests.get(url_update_status)
+# print(url_update_status)
+# assert response.status_code == 200, response
+# harvester_status = json.loads(response.content)
+#
+# # update the pi metadata
+# new_metadata = {}
+# new_metadata.upate(harvester_status['gps_coordinates'])
+# new_metadata.upate({'time': harvester_status['time']})
+#
 
 device_status = get_device_status()
 response = requests.post(url_update_status, json=device_status)
@@ -52,8 +53,6 @@ for f in sorted(glob.glob(pattern)):
 response = requests.post(url_images_to_upload, json=files)
 assert response.status_code == 200, response
 image_status = json.loads(response.content)
-
-
 
 for image, status in image_status.items():
     if status == "uploaded":

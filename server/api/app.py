@@ -5,20 +5,13 @@ import json
 import time
 
 from harvester_tools.harvester import Harvester
-# from gpsd.gps import MyGPS
-
-
-
 # TODO
 # https://wiki.archlinux.org/index.php/Network_Time_Protocol_daemon#Using_ntpd_with_GPS
 
 IMG_ROOT_DIR = "/sticky_pi/"
 REDIS_HOST = 'redis'
 GPS_HOST = 'harvester_gpsd'
-
 app = Flask(__name__)
-time.sleep(15)
-
 harvester = Harvester(IMG_ROOT_DIR, REDIS_HOST, GPS_HOST)
 
 @app.route('/', methods=['GET'])
@@ -31,8 +24,8 @@ def status():
     out = {
         'time': harvester.time,
         'gps_coordinates': harvester.gps_coordinates,
-        'devices': harvester.devices,
         'disk_info': harvester.disk_info,
+        'devices': harvester.devices,
         'n_local_images': harvester.n_image_files,
     }
     logging.warning(out)

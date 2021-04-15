@@ -20,6 +20,13 @@ class Harvester(object):
     def __init__(self, img_root_dir, redis_host, gps_host):
         self._gps_host = gps_host
         self._devices_db = redis.Redis(redis_host)
+
+        for d in self.devices:
+            if "in_transaction" in d and d["in_transaction"] == 1:
+                d["in_transaction"] = 0
+                self.update_device_status(d["id"], d)
+
+
         # self._devices = {}  # the detected devices. id:str -> {images -> {name -> md5},status -> }
         self._local_images = {}
         self._img_root_dir = img_root_dir
@@ -100,6 +107,10 @@ class Harvester(object):
             d = json.loads(self._devices_db.get(key).decode('ascii'))
             d["id"] = key.decode("ascii")
             out.append(d)
+
+        logging.warning(out)
+        out = [o for o in sorted(out, key = lambda x : x["updated_time"])]
+
         return out
 
 
@@ -119,7 +130,7 @@ class Harvester(object):
         except Exception as e:
             logging.error(e)
             #todo
-            out = {"alt":None}
+            out = {"alt":0.0, "lat":0.0, "lng":0.0}
         return out
 
     @property
