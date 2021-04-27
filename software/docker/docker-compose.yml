@@ -10,17 +10,48 @@ services:
       - 80:80
     env_file:
       - .env
+    depends_on:
+      - harvester_redis
 
-  redis:
+
+  harvester_redis:
+    container_name: harvester_redis
     image: redis:latest
     restart: always
+
 
   harvester_gpsd:
     container_name: harvester_gpsd
     restart: always
     build:
       context: ./gpsd
-    devices:
-      - "/dev/ttyACM0:/dev/ttyUSB0"
+
     ports:
       - 2948:2947
+    env_file:
+        - .env
+
+  harvester_spi_device_test:
+    container_name: harvester_spi_device_test
+    depends_on:
+      - harvester_api
+    build:
+      context: ./mock_spi_device
+    env_file:
+        - .env
+        - mock_spi_device/.env
+
+#  harvester_osm:
+#    container_name: harvester_osm
+#    restart: always
+#    command: "run"
+#    build:
+#      args:
+#        OSM_DOWNLOAD_URL: ${OSM_DOWNLOAD_URL}
+#      context: ./osm
+#    env_file:
+#        - .env
+#    ports:
+#      - 8087:80
+#    environment:
+#      - ALLOW_CORS=enabled

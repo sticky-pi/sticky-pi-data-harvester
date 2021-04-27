@@ -6,7 +6,7 @@ import glob
 import json
 
 DEVICE_ID = "5595c586"
-ROOT_IMG_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)),'test_images')
+ROOT_IMG_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../mock_spi_device/test_images')
 pattern = os.path.join(ROOT_IMG_DIR, DEVICE_ID, "*.jpg")
 
 def img_file_hash(path):

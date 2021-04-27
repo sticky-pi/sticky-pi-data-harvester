@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
-from flask import request
+from flask import request, redirect
+import requests
 import logging
 import json
 import time
@@ -8,8 +9,8 @@ from harvester_tools.harvester import Harvester
 # TODO
 # https://wiki.archlinux.org/index.php/Network_Time_Protocol_daemon#Using_ntpd_with_GPS
 
-IMG_ROOT_DIR = "/sticky_pi/"
-REDIS_HOST = 'redis'
+IMG_ROOT_DIR = '/opt/sticky_pi_data'
+REDIS_HOST = 'harvester_redis'
 GPS_HOST = 'harvester_gpsd'
 app = Flask(__name__)
 harvester = Harvester(IMG_ROOT_DIR, REDIS_HOST, GPS_HOST)
@@ -28,7 +29,7 @@ def status():
         'devices': harvester.devices,
         'n_local_images': harvester.n_image_files,
     }
-    logging.warning(out)
+    # logging.warning(out)
     return jsonify(out)
 
 
@@ -63,3 +64,10 @@ def upload_device_images(id: str):
     status["updated_time"] = time.time()
     out = harvester.upload_device_image(id, file, status, hash)
     return jsonify(out)
+
+@app.route('/osm_tile/<z>/<x>/<y>', methods=['GET'])
+def osm_tiles(z, x, y):
+    r = requests.get(f"http://harvester_osm/tile/{z}/{x}/{y}")
+    return r.content, r.status_code
+
+# @app.route('/osm_tile/<z>/<x>/<y>', methods=['GET'])

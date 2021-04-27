@@ -1,1 +1,14 @@
 #mapid { height: 180px; }
+.last-image {
+      width: 64px;
+      height: auto;
+     }
+.done-row {
+      background-color: #7d5;
+     }
+.syncing-row {
+      background-color: #75d;
+     }
+.error-row {
+    background-color: #5d7;
+    }

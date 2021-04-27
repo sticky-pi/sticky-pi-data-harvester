@@ -6,8 +6,9 @@
   <title>Sticky Pi Data Harvester</title>
   <link rel=stylesheet type=text/css href="static/css/jquery.dataTables.min.css"/>
   <link rel=stylesheet type=text/css href="static/css/bootstrap.min.css"/>
+  <link rel=stylesheet type=text/css href="static/css/bootstrap-icons.css"/>
   <link rel=stylesheet type=text/css href="static/css/style.css"/>
- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
    crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
@@ -42,16 +43,25 @@
 <main class="container">
 <div class="tab-content" id="nav-tabContent">
   <div class="tab-pane fade show active" id="nav-devices" role="tabpanel" aria-labelledby="nav-devices-tab">
-
-     <h2>Harvester</h2>
-        <ul>
-          <li>Time: <span id="harvester_time"></span></li>
-          <li>GPS: <span id="harvester_gps"></span></li>
-          <li>Disk: <span id="harvester_disk"></span></li>
-        </ul>
-     <div id="mapid"></div>
-    <h2>Devices</h2>
-    <table id="devices" class="display"></table>
+    <div class="row">
+        <div class="col-5">
+             <h2>Harvester</h2>
+                <ul>
+                  <li><i class="bi bi-clock"></i>  <span id="harvester_time"></span></li>
+                  <li><i class="bi bi-hdd"></i> <span id="harvester_disk"></span></li>
+                  <li><i class="bi bi-map"></i> <span id="harvester_gps"></span></li>
+                </ul>
+        </div>
+        <div class="col-7">
+            <div id="geo_data" class="col-sm">
+                <div id="mapid" style="height: 100% width: auto"></div>
+            </div>
+      </div>
+    </div>
+    <div class="row">
+        <h2>Devices</h2>
+        <table id="devices" class="display"></table>
+    </div>
   </div>
   <div class="tab-pane fade" id="nav-cloud" role="tabpanel" aria-labelledby="nav-cloud-tab">
     page2 TODO
