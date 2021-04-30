@@ -62,7 +62,7 @@ function timeConverter(UNIX_timestamp){
 //}
 //console.log(timeConverter(0));
 $(document).ready( function () {
-//    console.log("test")
+    console.log("doc ready")
 
     var mymap = L.map('mapid').setView([51.505, -0.09], 3);
 
@@ -70,6 +70,7 @@ $(document).ready( function () {
     var table = $('#devices').DataTable({
         "ajax": {   "url": "status",
                     "dataSrc" : function (json) {
+                        console.log(json)
 //                        console.log(json);
                         date = timeConverter(json.time);
                         $("#harvester_time").html(date)
@@ -120,9 +121,8 @@ $(document).ready( function () {
                             console.log(out[d]['status_progress'])
 
                             out[d]['available_disk_space'] = out[d]['available_disk_space'] + "%"
-//                            console.log(out[d]['last_image_thumbnail_path']);
                             last_img_timestamp = out[d]['last_image_timestamp']
-                            out[d]['last_image'] = {"url": "static/sticky_pi_data/"+ out[d]['last_image_thumbnail_path'],
+                            out[d]['last_image'] = {"url": "static/sticky_pi_data/images/"+ out[d]['last_image_thumbnail_path'],
                                                      "timestamp": last_img_timestamp}
                         }
 
@@ -192,3 +192,4 @@ $(document).ready( function () {
         ).addTo(mymap);
 
 } );
+console.log("doc not ready")

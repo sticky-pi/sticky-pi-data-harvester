@@ -7,7 +7,7 @@ import threading
 import time
 import os
 
-gpsd = subprocess.call(["gpsd", "-n", "-G", "-D3", "-S", "2947", "-F", "/var/run/gpsd.sock", "/dev/ttyUSB0"])
+gpsd = subprocess.call(["gpsd", "-n", "-G", "-D3", "-S", "2947", "-F", "/var/run/gpsd.sock", "/dev/ttyACMA0"])
 assert gpsd == 0
 app = Flask(__name__)
 

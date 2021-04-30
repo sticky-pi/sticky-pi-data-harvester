@@ -1,0 +1,6 @@
+home
+*secret*
+*.tar
+*.tar.gz
+*.img
+*.idea/

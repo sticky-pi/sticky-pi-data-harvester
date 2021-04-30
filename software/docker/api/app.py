@@ -4,16 +4,29 @@ import requests
 import logging
 import json
 import time
-
+import os
 from harvester_tools.harvester import Harvester
 # TODO
 # https://wiki.archlinux.org/index.php/Network_Time_Protocol_daemon#Using_ntpd_with_GPS
 
-IMG_ROOT_DIR = '/opt/sticky_pi_data'
-REDIS_HOST = 'harvester_redis'
-GPS_HOST = 'harvester_gpsd'
+IMG_ROOT_DIR = os.environ["IMG_ROOT_DIR"]
+assert IMG_ROOT_DIR
+
+REDIS_HOST = os.environ["REDIS_HOST"]
+assert REDIS_HOST
+
+GPS_HOST = os.environ["GPS_HOST"]
+assert GPS_HOST
+
+harv = None
+
 app = Flask(__name__)
-harvester = Harvester(IMG_ROOT_DIR, REDIS_HOST, GPS_HOST)
+
+def harvester():
+    global  harv
+    if harv is None:
+        harv = Harvester(IMG_ROOT_DIR, REDIS_HOST, GPS_HOST)
+    return harv
 
 @app.route('/', methods=['GET'])
 def index():
@@ -23,11 +36,11 @@ def index():
 @app.route('/status', methods=['GET'])
 def status():
     out = {
-        'time': harvester.time,
-        'gps_coordinates': harvester.gps_coordinates,
-        'disk_info': harvester.disk_info,
-        'devices': harvester.devices,
-        'n_local_images': harvester.n_image_files,
+        'time': harvester().time,
+        'gps_coordinates': harvester().gps_coordinates,
+        'disk_info': harvester().disk_info,
+        'devices': harvester().devices,
+        'n_local_images': harvester().n_image_files,
     }
     # logging.warning(out)
     return jsonify(out)
@@ -36,7 +49,7 @@ def status():
 @app.route('/images_to_upload/<id>', methods=['POST'])
 def images_to_upload(id: str):
     data = request.get_json()
-    out = harvester.images_to_upload(id, data)
+    out = harvester().images_to_upload(id, data)
     return jsonify(out)
 
 
@@ -49,7 +62,7 @@ def update_device_status(id: str):
     status["ip"] = request.remote_addr
     status["updated_time"] = time.time()
 
-    harvester.update_device_status(id, status)
+    harvester().update_device_status(id, status)
     return jsonify({})
 
 @app.route('/upload_device_images/<id>', methods=['POST'])
@@ -62,7 +75,7 @@ def upload_device_images(id: str):
 
     status["ip"] = request.remote_addr
     status["updated_time"] = time.time()
-    out = harvester.upload_device_image(id, file, status, hash)
+    out = harvester().upload_device_image(id, file, status, hash)
     return jsonify(out)
 
 @app.route('/osm_tile/<z>/<x>/<y>', methods=['GET'])

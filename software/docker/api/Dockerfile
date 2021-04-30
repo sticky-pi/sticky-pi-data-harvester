@@ -14,13 +14,13 @@ RUN set -e; \
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 RUN pip install  ipython
-RUN mkdir /opt/sticky_pi_data
+RUN mkdir /sticky_pi_data/images -p
 
 WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app
 
-RUN ln -s /opt/sticky_pi_data  /app/static/sticky_pi_data
-
+RUN mkdir /app/static/sticky_pi_data
+RUN ln -s /sticky_pi_data/images  /app/static/sticky_pi_data/images
 
 CMD ["uwsgi", "--ini", "uwsgi.ini"]

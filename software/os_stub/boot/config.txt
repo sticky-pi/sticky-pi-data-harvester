@@ -1,0 +1,10 @@
+# See /boot/overlays/README for all available options
+
+dtoverlay=vc4-kms-v3d-pi4
+gpu_mem=512
+dispmanx_offline=1
+disable_overscan=1
+
+initramfs initramfs-linux.img followkernel
+# rtc
+dtoverlay=i2c-rtc,ds1307
