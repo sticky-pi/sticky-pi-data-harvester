@@ -66,7 +66,22 @@ class Harvester(object):
         status["last_image_timestamp"] = datetime.datetime.strptime(im_datetime, '%Y-%m-%d_%H-%M-%S').timestamp()
         self.update_device_status(id, status)
         out = {}
+        return out
 
+    def upload_device_logfile(self, id, file, status, hash):
+        filename = file.filename
+        target = os.path.join(self._img_root_dir, id, filename)
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        tmp = target + "-tmp"
+        try:
+            file.save(tmp)
+            assert hash == img_file_hash(tmp), "Uploaded files does not match its hash"
+        except Exception as e:
+            logging.error(e)
+            os.remove(tmp)
+            raise e
+        os.rename(tmp, target)
+        out = {}
         return out
 
     def images_to_upload(self, id: str,

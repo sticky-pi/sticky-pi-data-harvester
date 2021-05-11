@@ -20,19 +20,24 @@ useradd -m  -G video,tty -s /bin/bash  pi
 chown -R pi /home/pi/
 
 pip install wheel
+
 cd /opt/sticky_pi_harvester/docker/
 for i in $(find . -name 'requirements.txt');
   do pip install -r $i -v;
 done
 
-
+echo '' >> /etc/environment
 echo 'REDIS_HOST=localhost' >> /etc/environment
 echo 'GPS_HOST=localhost:8080' >> /etc/environment
 echo 'MOCK_GPS=0' >> /etc/environment
+
+mkdir /opt/sticky_pi_harvester/docker/api/static/sticky_pi_data -p
+ln -s /sticky_pi_data/images  /opt/sticky_pi_harvester/docker/api/static/sticky_pi_data/images
 
 # RTC?
 
 # ntp on gps?
 systemctl enable redis
+systemctl enable first_boot
 systemctl enable  harvester_api
 systemctl enable  harvester_gpsd

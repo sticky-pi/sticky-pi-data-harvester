@@ -1,10 +1,38 @@
 # See /boot/overlays/README for all available options
 
+dtoverlay=disable-bt
+
 dtoverlay=vc4-kms-v3d-pi4
 gpu_mem=512
 dispmanx_offline=1
 disable_overscan=1
+dtoverlay=gpio-shutdown,gpio_pin=26
 
 initramfs initramfs-linux.img followkernel
 # rtc
 dtoverlay=i2c-rtc,ds1307
+
+# serial GPS
+dtoverlay=uart1
+enable_uart=1
+
+
+
+#touchscreen, from  https://github.com/goodtft/LCD-show/blob/master/LCD5-show
+dtoverlay=ads7846,cs=1,penirq=25,penirq_pull=2,speed=50000,keep_vref_on=0,swapxy=0,pmax=255,xohms=150,xmin=200,xmax=3900,ymin=200,ymax=3900
+dtparam=i2c_arm=on
+dtparam=spi=on
+
+#display_rotate=0
+#max_usb_current=1
+#config_hdmi_boost=7
+#hdmi_group=2
+#hdmi_mode=1
+#hdmi_mode=87
+#hdmi_drive=1
+#hdmi_cvt 800 480 60 6 0 0 0
+
+
+
+
+

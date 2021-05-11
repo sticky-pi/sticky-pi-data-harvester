@@ -28,6 +28,8 @@ services:
 #      - 2948:2947
     env_file:
         - .env
+#    devices:
+#      - "/dev/ttyACM0:${GPS_DEVICE}"
 
   harvester_spi_device_test:
     container_name: harvester_spi_device_test
@@ -39,17 +41,17 @@ services:
         - .env
         - mock_spi_device/.env
 
-#  harvester_osm:
-#    container_name: harvester_osm
-#    restart: always
-#    command: "run"
-#    build:
-#      args:
-#        OSM_DOWNLOAD_URL: ${OSM_DOWNLOAD_URL}
-#      context: ./osm
-#    env_file:
-#        - .env
-#    ports:
-#      - 8087:80
-#    environment:
-#      - ALLOW_CORS=enabled
+  harvester_osm:
+    container_name: harvester_osm
+    restart: always
+    command: "run"
+    build:
+      args:
+        OSM_DOWNLOAD_URL: ${OSM_DOWNLOAD_URL}
+      context: ./osm
+    env_file:
+        - .env
+    ports:
+      - 8087:80
+    environment:
+      - ALLOW_CORS=enabled

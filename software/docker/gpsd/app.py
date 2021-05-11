@@ -7,10 +7,11 @@ import threading
 import time
 import os
 
-gpsd = subprocess.call(["gpsd", "-n", "-G", "-D3", "-S", "2947", "-F", "/var/run/gpsd.sock", "/dev/ttyACMA0"])
-assert gpsd == 0
+
 app = Flask(__name__)
 
+GPS_DEVICE = os.environ["GPS_DEVICE"]
+assert os.path.exists(GPS_DEVICE), f"No GPS device {GPS_DEVICE}"
 
 class MyGPS(threading.Thread):
     _persist_time = 10
@@ -23,24 +24,34 @@ class MyGPS(threading.Thread):
                                   "alt": None,
                                   }
         self._last_gps_record = (time.time(), time.time())  # (OS, GPS)
+
+        # self._agps_thread = self._agps_thread_instance()
         super().__init__()
 
-    def _agps_thread_instance(self):
-        self._agps_thread = AGPS3mechanism()  # Instantiate AGPS3 Mechanisms
-        self._agps_thread.stream_data()
-        self._agps_thread.run_thread()
-        return self._agps_thread
-
     def run(self):
-        self._agps_thread = self._agps_thread_instance()
+        gpsd = subprocess.Popen(["gpsd", "-N", "-n", "-G", "-D3", "-S", "2947", "-F", "/var/run/gpsd.sock", GPS_DEVICE])
+        time.sleep(3)
+        agps_thread = AGPS3mechanism()  # Instantiate AGPS3 Mechanisms
+        agps_thread.stream_data()
+        agps_thread.run_thread()
+
         while True:
+            if gpsd.poll() is not None:
+                logging.error(f"GPSD has stopped. KILLING process.")
+                try:
+                    gpsd.terminate()
+                finally:
+                    os._exit(1)
+
             now = time.time()
-            # todo kill gpsd if no data!
-            out = {"time": self._agps_thread.data_stream.time,
-                   "lat": self._agps_thread.data_stream.lat,
-                   "lng": self._agps_thread.data_stream.lon,
-                   "alt": self._agps_thread.data_stream.alt,
+            out = {"time": agps_thread.data_stream.time,
+                   "lat": agps_thread.data_stream.lat,
+                   "lng": agps_thread.data_stream.lon,
+                   "alt": agps_thread.data_stream.alt,
                    }
+
+            logging.warning("Raw GPS out")
+            logging.warning(out)
 
             for k, v in out.items():
                 if v == "n/a":
@@ -56,12 +67,16 @@ class MyGPS(threading.Thread):
             else:
                 if (now - self._last_gps_record[0]) > self._kill_no_gps_data:
                     logging.error(f"No GPS data in {self._kill_no_gps_data}s. KILLING process.")
-                    os._exit(1)
+                    try:
+                        self._gpsd.terminate()
+                    finally:
+                        os._exit(1)
                 else:
                     logging.warning("No valid GPS record")
 
             valid_last_coords = self._last_coordinates and self._last_coordinates["time"] and (
                         now - self._last_coordinates["time"]) < self._persist_time
+
             for k, v in out.items():
                 if out[k] is None and valid_last_coords:
                     out[k] = self._last_coordinates[k]

@@ -62,15 +62,12 @@ function timeConverter(UNIX_timestamp){
 //}
 //console.log(timeConverter(0));
 $(document).ready( function () {
-    console.log("doc ready")
-
     var mymap = L.map('mapid').setView([51.505, -0.09], 3);
 
     var marker = L.marker([0,0]).addTo(mymap);
     var table = $('#devices').DataTable({
         "ajax": {   "url": "status",
                     "dataSrc" : function (json) {
-                        console.log(json)
 //                        console.log(json);
                         date = timeConverter(json.time);
                         $("#harvester_time").html(date)
@@ -99,27 +96,43 @@ $(document).ready( function () {
                                         Math.round(100 * json.disk_info["used"]/json.disk_info["total"]) + "% used");
                         out = json.devices;
 
-                        now = Math.floor(Date.now() / 1000)
-                        for (d in out){
-                            out[d]['progress'] = "<i class='bi bi-download'></i> " + out[d].progress_uploading + "/" + out[d].progress_to_upload +
-//                            + "<br>" +
-                                                 " | <i class='bi bi-hand-thumbs-up'></i> "  + out[d].progress_skipping +
-//                                                  + "/" + out[d].progress_to_skip +"<br>"+
-                                                 " | <i class='bi bi-x-octagon-fill'></i> "    + out[d].progress_errors;
+                        now = Math.floor(Date.now() / 1000);
 
-                            incomplete = out[d].progress_uploading + out[d].progress_skipping !=  out[d].progress_to_upload + out[d].progress_to_skip;
-                            done = out[d]['status'] == "done";
-                            out[d]['status'] = (out[d]['in_transaction'] == 1) ? "<i class='bi bi-arrow-clockwise' style='font-size: 2rem;'></i>" : "<i class='bi bi-check-all' style='font-size: 2rem;'></i>";
-                            if(incomplete & done){
-                                out[d]['status'] = "<i class='bi bi-x-square-fill' style='font-size: 2rem; color: red;'></i>"
+                        console.log(out);
+
+                        for (d in out){
+                            out[d]['progress'] = "<i class='bi bi-download'></i>&nbsp" + out[d].progress_uploading + "/" + out[d].progress_to_upload +
+//                            + "<br>" +
+                                                 " | <i class='bi bi-hand-thumbs-up'></i>&nbsp"  + out[d].progress_skipping +
+//                                                  + "/" + out[d].progress_to_skip +"<br>"+
+                                                 " | <i class='bi bi-x-octagon-fill'></i>&nbsp"    + out[d].progress_errors;
+
+                            done = out[d].progress_uploading + out[d].progress_skipping ==  out[d].progress_to_upload + out[d].progress_to_skip;
+                            error = out[d].progress_errors > 0;
+
+                            out[d]['status_text'] = (out[d]['in_transaction'] == 1) ?
+                                            "<i class='bi bi-arrow-clockwise' style='font-size: 2rem;'></i>" :
+                                            "<i class='bi bi-check-all' style='font-size: 2rem;'></i>";
+                            if(out[d]['in_transaction'] == 1){
+                                out[d]['status_text'] = "<i class='bi bi-arrow-clockwise' style='font-size: 2rem;'></i>";
+                                out[d]['status'] = "syncing"
+                            }
+                            else if(error || !done){
+                                out[d]['status_text'] = "<i class='bi bi-x-square-fill' style='font-size: 2rem; color: red;'></i>";
+                                out[d]['status'] = "error"
+                            }
+                            else{
+                                out[d]['status_text'] = "<i class='bi bi-check-all' style='font-size: 2rem;'></i>";
+                                out[d]['status'] = "done"
                             }
 
-                            out[d]['last_update'] = secs_to_human_durations(now - Math.floor(out[d].updated_time));
-                            out[d]['status_progress'] =  out[d]['status'] + " ("+
-                                                         out[d]['progress'] + ")<br>" +
-                                                        out[d]['last_update']
-                            console.log(out[d]['status_progress'])
 
+                            out[d]['last_update_human'] = secs_to_human_durations(now - Math.floor(out[d].updated_time));
+                            out[d]['status_progress'] =  out[d]['status_text'] + " ("+
+                                                         out[d]['progress'] + ")<br>" +
+                                                        out[d]['last_update_human']
+
+                            out[d]['device_str'] = "<a href='static/sticky_pi_data/images/" + out[d]['id'] + "/sticky_pi.log'"+ ">"+ out[d]['id'] + "</a>"
                             out[d]['available_disk_space'] = out[d]['available_disk_space'] + "%"
                             last_img_timestamp = out[d]['last_image_timestamp']
                             out[d]['last_image'] = {"url": "static/sticky_pi_data/images/"+ out[d]['last_image_thumbnail_path'],
@@ -129,22 +142,37 @@ $(document).ready( function () {
                         return out;
                     }},
             "columns":[
-                {"data":"id", 'title': 'Device'},
+                {"data":"device_str", 'title': 'Device'},
                 {"data":"status_progress", 'title': 'Data transfer'},
-//                {"data":"last_update", 'title': 'Last connection'},
                 {"data":"last_image", 'title': 'Last image'},
                 {"data":"available_disk_space", 'title': 'Disk left'},
                 {"data":"ip", 'title': 'IP addr.'},
+                {"data":"updated_time", 'title': 'Last update'},
+                {"data":"status", 'title': 'Status'},
                 ],
-             "columnDefs": [{ "targets": 2,
+             "order":[5, 'desc'],
+             "columnDefs": [
+             { "targets": 2,
                               "render": function(data) {
-
                                 now = Math.floor(Date.now() / 1000);
-                                last_image_duration = secs_to_human_durations(now - Math.floor(out[d].updated_time));
+                                last_image_duration = secs_to_human_durations(now - Math.floor(data['timestamp']));
+                                out =  '<div class="thumbnail_container">' +
+                                            '<img class="last_image_thumbnail" src="'+data["url"]+'">'+
+                                            '<div class="text_in_thumbnail_bg"><div class="text_in_thumbnail">' +
+                                                last_image_duration +
+                                             '</div></div>' +
+                                             '</div>';
+//                                console.log(out);
+                                return out;
 
-                                return '<img class="last-image" src="'+data["url"]+'"><br>' + last_image_duration
                               }
-                                 }],
+                                 }
+                                 ,
+                                 { "targets": 5,
+                                    "visible": false,
+                                    "searchable": false
+                                    }
+                                 ],
             "rowCallback": function( row, data, index ) {
                 if ( data["status"] === "syncing" ){
                         $('td', row).addClass("syncing-row");
@@ -157,7 +185,8 @@ $(document).ready( function () {
                 }
 
                 },
-            "paging": false
+            "paging": false,
+            "searching": false
         });
 
 

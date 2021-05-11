@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Sticky Pi Data Harvester</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+
   <link rel=stylesheet type=text/css href="static/css/jquery.dataTables.min.css"/>
   <link rel=stylesheet type=text/css href="static/css/bootstrap.min.css"/>
   <link rel=stylesheet type=text/css href="static/css/bootstrap-icons.css"/>
@@ -42,11 +44,11 @@
   <div class="tab-pane fade show active" id="nav-devices" role="tabpanel" aria-labelledby="nav-devices-tab">
     <div class="row">
         <div class="col-5">
-             <h2>Harvester</h2>
-                <ul>
-                  <li><i class="bi bi-clock"></i>  <span id="harvester_time"></span></li>
-                  <li><i class="bi bi-hdd"></i> <span id="harvester_disk"></span></li>
-                  <li><i class="bi bi-map"></i> <span id="harvester_gps"></span></li>
+             <h4>Harvester</h4>
+                <ul  class="list-group">
+                  <li class="list-group-item"><i class="bi bi-clock"></i>  <span id="harvester_time"></span></li>
+                  <li class="list-group-item"><i class="bi bi-hdd"></i> <span id="harvester_disk"></span></li>
+                  <li class="list-group-item"><i class="bi bi-map"></i> <span id="harvester_gps"></span></li>
                 </ul>
         </div>
         <div class="col-7">
@@ -55,9 +57,10 @@
             </div>
       </div>
     </div>
+      <hr/>
     <div class="row">
-        <h2>Devices</h2>
-        <table id="devices" class="display"></table>
+        <h4>Devices</h4>
+        <table id="devices" class="display compact"></table>
     </div>
   </div>
   <div class="tab-pane fade" id="nav-cloud" role="tabpanel" aria-labelledby="nav-cloud-tab">
