@@ -1,0 +1,59 @@
+body{
+    font-size: 80%;
+}
+
+.list-group-item{
+    padding: 0.2rem;
+}
+
+#mapid { height: 180px; }
+
+.error-row {
+      background-color: #7d5;
+     }
+.syncing-row {
+      background-color: #75d;
+     }
+.done-row {
+    background-color: #5d7;
+    }
+
+
+div.thumbnail_container{
+    width: auto;
+    height: 48px;
+    position: relative
+}
+
+.last_image_thumbnail {
+      position: absolute;
+      width: auto;
+      height: 100%;
+     }
+div.text_in_thumbnail_bg{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    opacity:0.5;
+    background: #fff;
+    }
+
+div.text_in_thumbnail{
+    opacity:1;
+    }
+
+bi-arrow-clockwise{
+  animation-name: spin;
+  animation-duration: 3000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}

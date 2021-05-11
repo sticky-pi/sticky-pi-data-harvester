@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  harvester_api:
+    volumes:
+      - /sticky_pi_data/images:/opt/sticky_pi_data
+
+
+  harvester_gpsd:
+    devices:
+      - "/dev/ttyACM0:/dev/ttyUSB0"

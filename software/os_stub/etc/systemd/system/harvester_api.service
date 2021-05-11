@@ -1,0 +1,18 @@
+[Unit]
+Description="Entrypoint to data harvester"
+After=time-sync.target redis.target
+Wants=redis.target
+
+[Service]
+WorkingDirectory=/opt/sticky_pi_harvester/docker/api
+EnvironmentFile=/etc/environment
+KillSignal=SIGQUIT
+Type=notify
+NotifyAccess=all
+StandardError=syslog
+ExecStart=/usr/bin/uwsgi --ini uwsgi.ini
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=basic.target

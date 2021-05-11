@@ -1,0 +1,6 @@
+Flask
+retry
+requests
+uWSGI
+redis
+pillow

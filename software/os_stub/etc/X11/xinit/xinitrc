@@ -1,0 +1,2 @@
+exec /usr/bin/firefox --kiosk http://localhost --window-size=$(xrandr |awk '$0 ~ "*" {print $1}'|sed s/x/,/g)
+#exec /usr/bin/chromium  --kiosk  --app=http://localhost --unlimited-storage  --noerrdialogs --disable-session-crashed-bubble --disable-infobars --disable-restore-session-state --ignore-gpu-blacklist --enable-gpu-rasterization --enable-native-gpu-memory-buffers --disable-gpu-compositing

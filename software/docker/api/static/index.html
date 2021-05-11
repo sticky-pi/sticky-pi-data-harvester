@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Sticky Pi Data Harvester</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+
+  <link rel=stylesheet type=text/css href="static/css/jquery.dataTables.min.css"/>
+  <link rel=stylesheet type=text/css href="static/css/bootstrap.min.css"/>
+  <link rel=stylesheet type=text/css href="static/css/bootstrap-icons.css"/>
+  <link rel="stylesheet" href="static/css/leaflet.css">
+  <link rel=stylesheet type=text/css href="static/css/style.css"/>
+
+  <script src=static/js/jquery-3.6.0.min.js></script>
+  <script src=static/js/jquery.dataTables.min.js></script>
+  <script src="static/js/leaflet.js"></script>
+  <script src=static/js/script.js></script>
+
+</head>
+<body>
+
+
+
+<!--<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">-->
+<!--  <div class="container-fluid">-->
+<!--   -->
+<!--</div>-->
+<!--  </div>-->
+<!--</nav>-->
+
+  <header>
+<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <button class="nav-link active" id="nav-devices-tab" data-bs-toggle="tab" data-bs-target="#nav-devices" type="button" role="tab" aria-controls="nav-devices" aria-selected="true">Devices</button>
+    <button class="nav-link" id="nav-cloud-tab" data-bs-toggle="tab" data-bs-target="#nav-cloud" type="button" role="tab" aria-controls="nav-cloud" aria-selected="false">Cloud</button>
+<!--    <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Contact</button>-->
+  </div>
+</nav>
+</header>
+<main class="container">
+<div class="tab-content" id="nav-tabContent">
+  <div class="tab-pane fade show active" id="nav-devices" role="tabpanel" aria-labelledby="nav-devices-tab">
+    <div class="row">
+        <div class="col-5">
+             <h4>Harvester</h4>
+                <ul  class="list-group">
+                  <li class="list-group-item"><i class="bi bi-clock"></i>  <span id="harvester_time"></span></li>
+                  <li class="list-group-item"><i class="bi bi-hdd"></i> <span id="harvester_disk"></span></li>
+                  <li class="list-group-item"><i class="bi bi-map"></i> <span id="harvester_gps"></span></li>
+                </ul>
+        </div>
+        <div class="col-7">
+            <div id="geo_data" class="col-sm">
+                <div id="mapid" style="height: 100% width: auto"></div>
+            </div>
+      </div>
+    </div>
+      <hr/>
+    <div class="row">
+        <h4>Devices</h4>
+        <table id="devices" class="display compact"></table>
+    </div>
+  </div>
+  <div class="tab-pane fade" id="nav-cloud" role="tabpanel" aria-labelledby="nav-cloud-tab">
+    page2 TODO
+  </div>
+<!--  <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">-->
+<!--    TEST2-->
+<!--  </div>-->
+</div>
+</main>
+<table id="devices" class="display"/>
+<script src=static/js/bootstrap.bundle.js></script>
+</body>
+</html>
+
