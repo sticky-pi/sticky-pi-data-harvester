@@ -68,10 +68,8 @@ $(document).ready( function () {
     var table = $('#devices').DataTable({
         "ajax": {   "url": "status",
                     "dataSrc" : function (json) {
-//                        console.log(json);
                         date = timeConverter(json.time);
                         $("#harvester_time").html(date)
-//                        console.log(json);
                         coords = json.gps_coordinates;
                         if(coords["lat"] === null){
                             $("#mapid").hide()
@@ -96,15 +94,27 @@ $(document).ready( function () {
                                         Math.round(100 * json.disk_info["used"]/json.disk_info["total"]) + "% used");
                         out = json.devices;
 
-                        now = Math.floor(Date.now() / 1000);
 
-                        console.log(out);
+                      $("#uploader_n_images").html(json.n_local_images);
+                      $("#uploader_connection_status").html(json.cloud_uploader["connection_status"]);
+                      $("#uploader_upload_status").html(json.cloud_uploader["upload_status"]);
+                      log_text = json.cloud_uploader["logs"];
+                      if (typeof log_text !== 'undefined'){
+                        log_text = log_text.replace(/\n/g, "<br />");
+                      }
+                      else{
+                        log_text = "";
+                      }
+
+                      $(".uploader_logs").html(log_text);
+                      $('.uploader_logs').scrollTop($('.uploader_logs')[0].scrollHeight);
+
+
+                        now = Math.floor(Date.now() / 1000);
 
                         for (d in out){
                             out[d]['progress'] = "<i class='bi bi-download'></i>&nbsp" + out[d].progress_uploading + "/" + out[d].progress_to_upload +
-//                            + "<br>" +
                                                  " | <i class='bi bi-hand-thumbs-up'></i>&nbsp"  + out[d].progress_skipping +
-//                                                  + "/" + out[d].progress_to_skip +"<br>"+
                                                  " | <i class='bi bi-x-octagon-fill'></i>&nbsp"    + out[d].progress_errors;
 
                             done = out[d].progress_uploading + out[d].progress_skipping ==  out[d].progress_to_upload + out[d].progress_to_skip;

@@ -10,6 +10,7 @@ import time
 import requests
 from PIL import Image
 
+
 def img_file_hash(path):
     stats = os.stat(path)
     #fixme. make a fast hash, e.g. using first and last bytes
@@ -19,8 +20,10 @@ def img_file_hash(path):
 class Harvester(object):
     _gps_coord_persistence_t = 120  # if gps reads fail, we use past data as long as it is not older then this var
     _thumbnail_size = 128, 128
-    def __init__(self, img_root_dir, redis_host, gps_host):
+
+    def __init__(self, img_root_dir, redis_host, gps_host, uploader_host):
         self._gps_host = gps_host
+        self._uploader_host = uploader_host
         self._devices_db = redis.Redis(redis_host)
 
         for d in self.devices:
@@ -31,7 +34,6 @@ class Harvester(object):
         self._local_images = {}
         self._img_root_dir = img_root_dir
         os.makedirs(self._img_root_dir, exist_ok=True)
-
 
     def update_device_status(self, id, status):
         id = id.encode("ascii")
@@ -62,7 +64,7 @@ class Harvester(object):
             im.save(target + ".thumbnail", "JPEG")
 
         status["last_image_path"] = os.path.relpath(target,self._img_root_dir)
-        status["last_image_thumbnail_path"] = os.path.relpath(target + ".thumbnail" ,self._img_root_dir)
+        status["last_image_thumbnail_path"] = os.path.relpath(target + ".thumbnail", self._img_root_dir)
         status["last_image_timestamp"] = datetime.datetime.strptime(im_datetime, '%Y-%m-%d_%H-%M-%S').timestamp()
         self.update_device_status(id, status)
         out = {}
@@ -155,6 +157,19 @@ class Harvester(object):
         except Exception as e:
             logging.error(e)
             out = {"alt": None, "lat": None, "lng": None, "time": None}
+        return out
+
+    @property
+    def uploader_status(self) -> Dict:
+        try:
+            resp = requests.get("http://" + self._uploader_host, timeout=0.2)
+            if resp.status_code == 200:
+                out = json.loads(resp.content)
+            else:
+                raise Exception("GPS server down!")
+        except Exception as e:
+            logging.error(e)
+            out = {}
         return out
 
     @property
