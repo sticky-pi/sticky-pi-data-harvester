@@ -83,10 +83,13 @@ class CloudUploadDaemon(threading.Thread):
             self._upload_status = "uploading"
             try:
                 cli = RemoteClient(self._client_dir, self._host, self._username, self._password, n_threads=1)
+                cli.put_images(images_to_sync)
             except RemoteAPIException as e:
                 self._upload_status = "upload error"
                 logging.error(e)
-            cli.put_images(images_to_sync)
+            except Exception as e:
+                self._upload_status = "unknown error"
+                logging.error(e)
             all_files_uploaded = True
             time.sleep(10)
 

@@ -20,7 +20,7 @@ useradd -m  -G video,tty -s /bin/bash  pi
 chown -R pi /home/pi/
 
 pip install wheel
-pip install git+https://github.com/sticky-pi/sticky-pi-api@develop#egg=sticky_pi_api&subdirectory=src
+pip install 'git+https://github.com/sticky-pi/sticky-pi-api@develop#egg=sticky_pi_api&subdirectory=src'
 
 
 cd /opt/sticky_pi_harvester/docker/
