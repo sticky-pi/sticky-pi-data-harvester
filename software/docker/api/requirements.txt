@@ -4,3 +4,4 @@ requests
 uWSGI
 redis
 pillow
+gpiozero

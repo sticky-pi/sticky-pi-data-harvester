@@ -70,6 +70,8 @@ $(document).ready( function () {
                     "dataSrc" : function (json) {
                         date = timeConverter(json.time);
                         $("#harvester_time").html(date)
+                        $("#harvester_core_temp").html(json.core_temperature)
+
                         coords = json.gps_coordinates;
                         if(coords["lat"] === null){
                             $("#mapid").hide()
@@ -142,7 +144,7 @@ $(document).ready( function () {
                                                          out[d]['progress'] + ")<br>" +
                                                         out[d]['last_update_human']
 
-                            out[d]['device_str'] = "<a href='static/sticky_pi_data/images/" + out[d]['id'] + "/sticky_pi.log'"+ ">"+ out[d]['id'] + "</a>"
+                            out[d]['device_str'] = "<a target='_blank'  rel='noopener noreferrer'   href='static/sticky_pi_data/images/" + out[d]['id'] + "/sticky_pi.log'"+ ">"+ out[d]['id'] + "</a>"
                             out[d]['available_disk_space'] = out[d]['available_disk_space'] + "%"
                             last_img_timestamp = out[d]['last_image_timestamp']
                             out[d]['last_image'] = {"url": "static/sticky_pi_data/images/"+ out[d]['last_image_thumbnail_path'],
@@ -167,7 +169,7 @@ $(document).ready( function () {
                                 now = Math.floor(Date.now() / 1000);
                                 last_image_duration = secs_to_human_durations(now - Math.floor(data['timestamp']));
                                 out =  '<div class="thumbnail_container">' +
-                                            '<img class="last_image_thumbnail" src="'+data["url"]+'">'+
+                                            '<a target="_blank"  rel="noopener noreferrer" href = "' +  data["url"].split('.').slice(0, -1).join('.') + '"><img class="last_image_thumbnail" src="'+data["url"]+'"></a>'+
                                             '<div class="text_in_thumbnail_bg"><div class="text_in_thumbnail">' +
                                                 last_image_duration +
                                              '</div></div>' +

@@ -117,6 +117,14 @@ class Harvester(object):
     #     return self._devices
 
     @property
+    def core_temperature(self) -> float:
+        try:
+            from gpiozero import CPUTemperature
+            return CPUTemperature()
+        except ImportError:
+            return -300.0
+
+    @property
     def disk_info(self) -> Dict[str, float]:
         total, used, free = shutil.disk_usage(self._img_root_dir)
         return {"total": total,

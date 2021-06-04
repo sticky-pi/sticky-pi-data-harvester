@@ -35,6 +35,7 @@ def index():
 def status():
     out = {
         'time': harvester.time,
+        "core_temperature": harvester.core_temperature,
         'gps_coordinates': harvester.gps_coordinates,
         'disk_info': harvester.disk_info,
         'devices': harvester.devices,
