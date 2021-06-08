@@ -15,7 +15,7 @@ RUN apk add --no-cache gpsd gpsd-clients bash
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 RUN pip install  ipython
-RUN pip install git+https://github.com/sticky-pi/sticky-pi-api@main#egg=sticky_pi_api&subdirectory=src
+RUN pip install 'git+https://github.com/sticky-pi/sticky-pi-api@main#egg=sticky_pi_api&subdirectory=src'
 
 WORKDIR /app
 # Copy the current directory contents into the container at /app

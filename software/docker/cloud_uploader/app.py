@@ -61,8 +61,6 @@ class CloudUploadDaemon(threading.Thread):
         last_most_recent_file_timestamp = 0
         all_files_uploaded = False
         while True:
-            stream.truncate(0)
-            stream.seek(0)
             self._set_connection_status()
             images_to_sync = [g for g in glob.glob(os.path.join(self._img_root_dir, '**', '*.jpg'))]
             if len(images_to_sync) == 0:
@@ -75,21 +73,25 @@ class CloudUploadDaemon(threading.Thread):
                 self._upload_status = "pending"
             else:
                 self._upload_status = "done"
-            last_most_recent_file_timestamp = most_recent_file_timestamp
             if all_files_uploaded or self._connection_status != "connected":
                 time.sleep(10)
                 continue
 
             self._upload_status = "uploading"
             try:
-                cli = RemoteClient(self._client_dir, self._host, self._username, self._password, n_threads=1)
+                stream.truncate(0)
+                stream.seek(0)
+                cli = RemoteClient(self._client_dir, self._host, self._username, self._password, n_threads=1, skip_on_error=True)
                 cli.put_images(images_to_sync)
+                last_most_recent_file_timestamp = most_recent_file_timestamp
             except RemoteAPIException as e:
                 self._upload_status = "upload error"
                 logging.error(e)
+                print(e)
             except Exception as e:
                 self._upload_status = "unknown error"
                 logging.error(e)
+                print(e)
             all_files_uploaded = True
             time.sleep(10)
 
@@ -104,8 +106,11 @@ def index():
     if not cloud_uploader.is_alive():
         logging.error("Uploader Thread dead! stopping")
         exit(1)
+    logs = stream.getvalue()
+    if not logs:
+        logs = None
     # logger?
-    out = {"logs": stream.getvalue(),
+    out = {"logs": logs,
            "connection_status": cloud_uploader.connection_status,
            "upload_status": cloud_uploader.upload_status}
     return jsonify(out)
