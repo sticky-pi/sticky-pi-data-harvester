@@ -120,7 +120,7 @@ class Harvester(object):
     def core_temperature(self) -> float:
         try:
             from gpiozero import CPUTemperature
-            return CPUTemperature()
+            return CPUTemperature().temperature
         except ImportError:
             return -300.0
 

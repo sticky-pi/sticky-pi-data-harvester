@@ -62,6 +62,23 @@ function timeConverter(UNIX_timestamp){
 //}
 //console.log(timeConverter(0));
 $(document).ready( function () {
+
+    var device_map = {};
+    $.getJSON('static/device_map.json', function() {
+        console.log( "success" );
+        })
+      .done(function(data) {
+        console.log( "second success" );
+
+        for(d in data){
+            device_map[d] = data[d];
+            }
+
+      })
+      .fail(function() {
+        console.log( "error" );
+      })
+
     var mymap = L.map('mapid').setView([51.505, -0.09], 3);
 
     var marker = L.marker([0,0]).addTo(mymap);
@@ -100,21 +117,25 @@ $(document).ready( function () {
                       $("#uploader_n_images").html(json.n_local_images);
                       $("#uploader_connection_status").html(json.cloud_uploader["connection_status"]);
                       $("#uploader_upload_status").html(json.cloud_uploader["upload_status"]);
+
                       log_text = json.cloud_uploader["logs"];
-                      if (typeof log_text !== 'undefined'){
+                      if (typeof log_text !== 'undefined' && log_text){
                         log_text = log_text.replace(/\n/g, "<br />");
+                        $(".uploader_logs").html(log_text);
+                        $('.uploader_logs').scrollTop($('.uploader_logs')[0].scrollHeight);
                       }
                       else{
                         log_text = "";
                       }
 
-                      $(".uploader_logs").html(log_text);
-                      $('.uploader_logs').scrollTop($('.uploader_logs')[0].scrollHeight);
-
-
                         now = Math.floor(Date.now() / 1000);
 
                         for (d in out){
+                            if(device_map[out[d]['id']])
+                                out[d]["device_name"] = device_map[out[d]['id']];
+                            else
+                                out[d]["device_name"] = "undefined";
+
                             out[d]['progress'] = "<i class='bi bi-download'></i>&nbsp" + out[d].progress_uploading + "/" + out[d].progress_to_upload +
                                                  " | <i class='bi bi-hand-thumbs-up'></i>&nbsp"  + out[d].progress_skipping +
                                                  " | <i class='bi bi-x-octagon-fill'></i>&nbsp"    + out[d].progress_errors;
@@ -155,6 +176,7 @@ $(document).ready( function () {
                     }},
             "columns":[
                 {"data":"device_str", 'title': 'Device'},
+                {"data":"device_name", 'title': 'Name'},
                 {"data":"status_progress", 'title': 'Data transfer'},
                 {"data":"last_image", 'title': 'Last image'},
                 {"data":"available_disk_space", 'title': 'Disk left'},
@@ -162,9 +184,9 @@ $(document).ready( function () {
                 {"data":"updated_time", 'title': 'Last update'},
                 {"data":"status", 'title': 'Status'},
                 ],
-             "order":[5, 'desc'],
+             "order":[6, 'desc'],
              "columnDefs": [
-             { "targets": 2,
+             { "targets": 3,
                               "render": function(data) {
                                 now = Math.floor(Date.now() / 1000);
                                 last_image_duration = secs_to_human_durations(now - Math.floor(data['timestamp']));
@@ -180,7 +202,7 @@ $(document).ready( function () {
                               }
                                  }
                                  ,
-                                 { "targets": 5,
+                                 { "targets": 6,
                                     "visible": false,
                                     "searchable": false
                                     }
