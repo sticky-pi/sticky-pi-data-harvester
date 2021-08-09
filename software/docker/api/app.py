@@ -21,7 +21,10 @@ assert REDIS_HOST
 GPS_HOST = os.environ["GPS_HOST"]
 assert GPS_HOST
 
-harvester = Harvester(IMG_ROOT_DIR, REDIS_HOST, GPS_HOST)
+UPLOADER_HOST = os.environ["UPLOADER_HOST"]
+assert UPLOADER_HOST
+
+harvester = Harvester(IMG_ROOT_DIR, REDIS_HOST, GPS_HOST, UPLOADER_HOST)
 
 
 @app.route('/', methods=['GET'])
@@ -32,10 +35,12 @@ def index():
 def status():
     out = {
         'time': harvester.time,
+        "core_temperature": harvester.core_temperature,
         'gps_coordinates': harvester.gps_coordinates,
         'disk_info': harvester.disk_info,
         'devices': harvester.devices,
         'n_local_images': harvester.n_image_files,
+        'cloud_uploader': harvester.uploader_status
     }
     return jsonify(out)
 

@@ -2,15 +2,14 @@ include ./.env
 export
 
 OS_IMG_NAME:=$(shell date "+%Y-%m-%d")_sticky_pi_harvester_${SPI_ARCH}.img
-
-.PHONY: base_os custom_os docker_images
 BASE_OS_IMG_NAME:= base-${OS_IMG_NAME}
 OSM_SERVER_IMG := osm_tile_server.tar.gz
 
+.PHONY: base_os custom_os docker_images all
+all : custom_os
 base_os: ${BASE_OS_IMG_NAME}
 custom_os: ${OS_IMG_NAME}.gz
 
-all :${OS_IMG_NAME}.gz
 
 
 ${BASE_OS_IMG_NAME}: utils/make_base_os.sh

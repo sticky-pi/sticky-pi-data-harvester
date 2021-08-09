@@ -22,9 +22,9 @@ EOF
 
 resize2fs ${SD}p2
 
-timedatdtl set-time "2000-01-01 00:00:00"
+#timedatectl set-time "2000-01-01 00:00:00"
 
 mkdir -p /sticky_pi_data/images/
 mkdir -p /sticky_pi_data/osm/
 
-systemctl disable firt_boot
+systemctl disable first_boot

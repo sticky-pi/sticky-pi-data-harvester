@@ -62,16 +62,33 @@ function timeConverter(UNIX_timestamp){
 //}
 //console.log(timeConverter(0));
 $(document).ready( function () {
+
+    var device_map = {};
+    $.getJSON('static/device_map.json', function() {
+        console.log( "success" );
+        })
+      .done(function(data) {
+        console.log( "second success" );
+
+        for(d in data){
+            device_map[d] = data[d];
+            }
+
+      })
+      .fail(function() {
+        console.log( "error" );
+      })
+
     var mymap = L.map('mapid').setView([51.505, -0.09], 3);
 
     var marker = L.marker([0,0]).addTo(mymap);
     var table = $('#devices').DataTable({
         "ajax": {   "url": "status",
                     "dataSrc" : function (json) {
-//                        console.log(json);
                         date = timeConverter(json.time);
                         $("#harvester_time").html(date)
-//                        console.log(json);
+                        $("#harvester_core_temp").html(json.core_temperature)
+
                         coords = json.gps_coordinates;
                         if(coords["lat"] === null){
                             $("#mapid").hide()
@@ -96,15 +113,31 @@ $(document).ready( function () {
                                         Math.round(100 * json.disk_info["used"]/json.disk_info["total"]) + "% used");
                         out = json.devices;
 
+
+                      $("#uploader_n_images").html(json.n_local_images);
+                      $("#uploader_connection_status").html(json.cloud_uploader["connection_status"]);
+                      $("#uploader_upload_status").html(json.cloud_uploader["upload_status"]);
+
+                      log_text = json.cloud_uploader["logs"];
+                      if (typeof log_text !== 'undefined' && log_text){
+                        log_text = log_text.replace(/\n/g, "<br />");
+                        $(".uploader_logs").html(log_text);
+                        $('.uploader_logs').scrollTop($('.uploader_logs')[0].scrollHeight);
+                      }
+                      else{
+                        log_text = "";
+                      }
+
                         now = Math.floor(Date.now() / 1000);
 
-                        console.log(out);
-
                         for (d in out){
+                            if(device_map[out[d]['id']])
+                                out[d]["device_name"] = device_map[out[d]['id']];
+                            else
+                                out[d]["device_name"] = "undefined";
+
                             out[d]['progress'] = "<i class='bi bi-download'></i>&nbsp" + out[d].progress_uploading + "/" + out[d].progress_to_upload +
-//                            + "<br>" +
                                                  " | <i class='bi bi-hand-thumbs-up'></i>&nbsp"  + out[d].progress_skipping +
-//                                                  + "/" + out[d].progress_to_skip +"<br>"+
                                                  " | <i class='bi bi-x-octagon-fill'></i>&nbsp"    + out[d].progress_errors;
 
                             done = out[d].progress_uploading + out[d].progress_skipping ==  out[d].progress_to_upload + out[d].progress_to_skip;
@@ -132,7 +165,7 @@ $(document).ready( function () {
                                                          out[d]['progress'] + ")<br>" +
                                                         out[d]['last_update_human']
 
-                            out[d]['device_str'] = "<a href='static/sticky_pi_data/images/" + out[d]['id'] + "/sticky_pi.log'"+ ">"+ out[d]['id'] + "</a>"
+                            out[d]['device_str'] = "<a target='_blank'  rel='noopener noreferrer'   href='static/sticky_pi_data/images/" + out[d]['id'] + "/sticky_pi.log'"+ ">"+ out[d]['id'] + "</a>"
                             out[d]['available_disk_space'] = out[d]['available_disk_space'] + "%"
                             last_img_timestamp = out[d]['last_image_timestamp']
                             out[d]['last_image'] = {"url": "static/sticky_pi_data/images/"+ out[d]['last_image_thumbnail_path'],
@@ -143,6 +176,7 @@ $(document).ready( function () {
                     }},
             "columns":[
                 {"data":"device_str", 'title': 'Device'},
+                {"data":"device_name", 'title': 'Name'},
                 {"data":"status_progress", 'title': 'Data transfer'},
                 {"data":"last_image", 'title': 'Last image'},
                 {"data":"available_disk_space", 'title': 'Disk left'},
@@ -150,14 +184,14 @@ $(document).ready( function () {
                 {"data":"updated_time", 'title': 'Last update'},
                 {"data":"status", 'title': 'Status'},
                 ],
-             "order":[5, 'desc'],
+             "order":[6, 'desc'],
              "columnDefs": [
-             { "targets": 2,
+             { "targets": 3,
                               "render": function(data) {
                                 now = Math.floor(Date.now() / 1000);
                                 last_image_duration = secs_to_human_durations(now - Math.floor(data['timestamp']));
                                 out =  '<div class="thumbnail_container">' +
-                                            '<img class="last_image_thumbnail" src="'+data["url"]+'">'+
+                                            '<a target="_blank"  rel="noopener noreferrer" href = "' +  data["url"].split('.').slice(0, -1).join('.') + '"><img class="last_image_thumbnail" src="'+data["url"]+'"></a>'+
                                             '<div class="text_in_thumbnail_bg"><div class="text_in_thumbnail">' +
                                                 last_image_duration +
                                              '</div></div>' +
@@ -168,7 +202,7 @@ $(document).ready( function () {
                               }
                                  }
                                  ,
-                                 { "targets": 5,
+                                 { "targets": 6,
                                     "visible": false,
                                     "searchable": false
                                     }

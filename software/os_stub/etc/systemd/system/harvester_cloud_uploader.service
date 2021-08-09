@@ -1,0 +1,17 @@
+[Unit]
+Description="Upload daemon for data harvester"
+After=time-sync.target
+
+[Service]
+WorkingDirectory=/opt/sticky_pi_harvester/docker/cloud_uploader
+EnvironmentFile=/etc/environment
+KillSignal=SIGQUIT
+Type=notify
+NotifyAccess=all
+StandardError=syslog
+ExecStart=/usr/bin/uwsgi --ini uwsgi.ini
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=basic.target

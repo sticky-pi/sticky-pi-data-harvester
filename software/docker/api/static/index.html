@@ -49,6 +49,7 @@
                   <li class="list-group-item"><i class="bi bi-clock"></i>  <span id="harvester_time"></span></li>
                   <li class="list-group-item"><i class="bi bi-hdd"></i> <span id="harvester_disk"></span></li>
                   <li class="list-group-item"><i class="bi bi-map"></i> <span id="harvester_gps"></span></li>
+                  <li class="list-group-item"><i class="bi bi-thermometer"></i> <span id="harvester_core_temp"></span></li>
                 </ul>
         </div>
         <div class="col-7">
@@ -64,11 +65,20 @@
     </div>
   </div>
   <div class="tab-pane fade" id="nav-cloud" role="tabpanel" aria-labelledby="nav-cloud-tab">
-    page2 TODO
+     <h4>Cloud</h4>
+    <ul  class="list-group">
+      <li class="list-group-item"><i class="bi bi-hdd"></i>  <span id="uploader_n_images"></span></li>
+      <li class="list-group-item"><i class="bi bi-server"></i>  <span id="uploader_connection_status"></span></li>
+      <li class="list-group-item"><i class="bi bi-upload"></i> <span id="uploader_upload_status"></span></li>
+    </ul>
+  <div>
+      <i class="bi bi-card-text"></i>
+      <div class="uploader_logs">
+
+      </div>
   </div>
-<!--  <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">-->
-<!--    TEST2-->
-<!--  </div>-->
+  </div>
+
 </div>
 </main>
 <table id="devices" class="display"/>

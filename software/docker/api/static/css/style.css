@@ -12,7 +12,7 @@ body{
       background-color: #7d5;
      }
 .syncing-row {
-      background-color: #75d;
+      background-color: #999;
      }
 .done-row {
     background-color: #5d7;
@@ -57,3 +57,7 @@ bi-arrow-clockwise{
         transform:rotate(360deg);
     }
 }
+.uploader_logs{
+    height:200px;
+    overflow-y:scroll;
+    }
