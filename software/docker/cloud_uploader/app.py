@@ -1,3 +1,4 @@
+import traceback
 import logging
 import threading
 import os
@@ -60,15 +61,27 @@ class CloudUploadDaemon(threading.Thread):
     def run(self):
         last_most_recent_file_timestamp = 0
         all_files_uploaded = False
+
         while True:
             self._set_connection_status()
-            images_to_sync = [g for g in glob.glob(os.path.join(self._img_root_dir, '**', '*.jpg'))]
+            images_to_sync = [g for g in sorted(glob.glob(os.path.join(self._img_root_dir, '**', '*.jpg')))]
             if len(images_to_sync) == 0:
                 time.sleep(10)
                 continue
-            most_recent_file_timestamp = max([os.path.getmtime(f) for f in images_to_sync])
+
+            most_recent_file_timestamp = 0
+            for f in images_to_sync:
+                try:
+                    mtime = os.path.getmtime(f)
+                    if mtime >  most_recent_file_timestamp:
+                        most_recent_file_timestamp = mtime
+                # In case files are being purged at the same time
+                except FileNotFoundError:
+                    pass
+
+
             # print (last_most_recent_file_timestamp, most_recent_file_timestamp)
-            if last_most_recent_file_timestamp != most_recent_file_timestamp:
+            if last_most_recent_file_timestamp != most_recent_file_timestamp or all_files_uploaded is False:
                 all_files_uploaded = False
                 self._upload_status = "pending"
             else:
@@ -84,15 +97,20 @@ class CloudUploadDaemon(threading.Thread):
                 cli = RemoteClient(self._client_dir, self._host, self._username, self._password, n_threads=1, skip_on_error=True)
                 cli.put_images(images_to_sync)
                 last_most_recent_file_timestamp = most_recent_file_timestamp
+                all_files_uploaded = True
             except RemoteAPIException as e:
                 self._upload_status = "upload error"
                 logging.error(e)
+                traceback.print_tb(e.__traceback__)
                 print(e)
+                all_files_uploaded = False
             except Exception as e:
                 self._upload_status = "unknown error"
                 logging.error(e)
+                traceback.print_tb(e.__traceback__)
                 print(e)
-            all_files_uploaded = True
+                all_files_uploaded = False
+
             time.sleep(10)
 
 

@@ -100,15 +100,33 @@ class Harvester(object):
 
         for device_im_name, device_im_hash in images.items():
             local_file = os.path.join(self._img_root_dir, id, device_im_name)
-            if not os.path.exists(local_file):
-                im_status = "missing_on_remote"
-                n_missing_on_remote += 1
-            elif img_file_hash(local_file) != device_im_hash:
-                im_status = "checksum_differs"
-                n_checksum_differs += 1
+
+            # to free some space, we delete old images and replace them with a "ghost file", a txt file that contains the hash
+            # this is done AFTER files have been uploaded to the cloud
+            ghost_file = os.path.join(self._img_root_dir, id, device_im_name) + ".stats"
+
+            if os.path.exists(ghost_file):
+                with open(ghost_file, 'r') as f:
+                    im_data = json.load(f)
+                im_hash = f"hash-{im_data['st_size']}"
+
+                if im_hash != device_im_hash:
+                    im_status = "checksum_differs"
+                    n_checksum_differs += 1
+                else:
+                    im_status = "uploaded"
+                    n_uploaded += 1
+
             else:
-                im_status = "uploaded"
-                n_uploaded += 1
+                if not os.path.exists(local_file):
+                    im_status = "missing_on_remote"
+                    n_missing_on_remote += 1
+                elif img_file_hash(local_file) != device_im_hash:
+                    im_status = "checksum_differs"
+                    n_checksum_differs += 1
+                else:
+                    im_status = "uploaded"
+                    n_uploaded += 1
             out[device_im_name] = im_status
         return out
 
