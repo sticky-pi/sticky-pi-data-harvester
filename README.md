@@ -9,8 +9,7 @@ Instructions to assemble Sticky Pis are available on [our documentation](https:/
 ## Directory structure
 
 ### `hardware/`
-
-#TODO
+See [here](https://doc.sticky-pi.com/hardware.html#data-harvester).
 
 ### `software/` 
 Contains files and tools to build the OS for the Data harvester. 
